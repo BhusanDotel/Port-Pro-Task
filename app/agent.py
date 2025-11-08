@@ -11,12 +11,12 @@ client = genai.Client(api_key=API_KEY)
 
 class ContainerAgent:
 
-    async def process_query(self, text: str):
+    async def process_query(self, query: str):
             prompt = f"""
         You are an intelligent agent that extracts structured data from container queries.
 
         Given a query like:
-        "{text}"
+        "{query}"
 
         Return a JSON with exactly two fields:
         1. "intent": one of ["full_container_details", "check_availability", "get_location", "check_holds", "get_last_free_day"]

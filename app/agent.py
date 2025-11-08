@@ -4,16 +4,12 @@ from pydantic_ai import Agent
 from pydantic_ai.models.google import GoogleModel
 from pydantic_ai.providers.google import GoogleProvider
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from app.schemas import IntentAndContainer
 
 load_dotenv()
 
 MODEL = "gemini-2.5-flash"
 API_KEY = os.getenv("GEMINI_API_KEY")
-
-class IntentAndContainer(BaseModel):
-    intent: str
-    container: str
 
 provider = GoogleProvider(api_key=API_KEY)
 model = GoogleModel(MODEL, provider=provider)

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from app.agent import ContainerAgent
 from app.schemas import QueryRequest
 
 
@@ -15,8 +16,9 @@ async def query_container(req: QueryRequest):
     if not req.query or req.query.strip() == "":
         raise HTTPException(status_code=400, detail="query must be provided")
     try:
-        print("Query received:", req.query)
+        agent = ContainerAgent() 
+        result = await agent.process_query(req.query)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    return {"status": "success", "data": "Query processed"}    
+    return {"status": "success", "data": result}    

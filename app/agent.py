@@ -39,3 +39,15 @@ class ContainerAgent:
             response = await agent.run(prompt)
 
             return json.loads(response.output)
+    
+
+if __name__ == "__main__":
+    import asyncio
+
+    async def main():
+        container_agent = ContainerAgent()
+        query = "Where is container MSDU123456?"
+        result = await container_agent.process_query(query)
+        print(result)
+
+    asyncio.run(main())

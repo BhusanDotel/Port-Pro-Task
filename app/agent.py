@@ -7,7 +7,6 @@ load_dotenv()
 
 MODEL = "gemini-2.5-flash"  
 API_KEY=os.getenv("GEMINI_API_KEY")
-
 client = genai.Client(api_key=API_KEY)
 
 class ContainerAgent:

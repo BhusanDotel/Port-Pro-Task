@@ -4,15 +4,20 @@ from pydantic_ai import Agent
 from pydantic_ai.models.google import GoogleModel
 from pydantic_ai.providers.google import GoogleProvider
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
 load_dotenv()
 
 MODEL = "gemini-2.5-flash"
 API_KEY = os.getenv("GEMINI_API_KEY")
 
+class IntentAndContainer(BaseModel):
+    intent: str
+    container: str
+
 provider = GoogleProvider(api_key=API_KEY)
 model = GoogleModel(MODEL, provider=provider)
-agent = Agent(model)
+agent = Agent(model, output_type=IntentAndContainer)
 
 class ContainerAgent:
 
@@ -33,13 +38,13 @@ class ContainerAgent:
         "container": "MSDU123456"
         }}
 
-        Respond **ONLY** with the JSON, no code blocks, no newlines, no other characters, no explanations, nothing else.
+        Respond **ONLY** with the JSON, no explanations, nothing else.
         """
 
             response = await agent.run(prompt)
 
-            return json.loads(response.output)
-    
+            return response.output.model_dump()
+
 
 if __name__ == "__main__":
     import asyncio

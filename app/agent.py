@@ -1,13 +1,18 @@
 import json
 import os
-from google import genai
+from pydantic_ai import Agent
+from pydantic_ai.models.google import GoogleModel
+from pydantic_ai.providers.google import GoogleProvider
 from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "gemini-2.5-flash"  
-API_KEY=os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=API_KEY)
+MODEL = "gemini-2.5-flash"
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+provider = GoogleProvider(api_key=API_KEY)
+model = GoogleModel(MODEL, provider=provider)
+agent = Agent(model)
 
 class ContainerAgent:
 
@@ -31,14 +36,6 @@ class ContainerAgent:
         Respond **ONLY** with the JSON, no code blocks, no newlines, no other characters, no explanations, nothing else.
         """
 
-            response = client.models.generate_content(
-                model=MODEL,
-                contents=prompt
-            )
+            response = await agent.run(prompt)
 
-            try:
-                result = json.loads(response.text)
-            except json.JSONDecodeError:
-                result = {"intent": None, "container": None}
-
-            return result
+            return json.loads(response.output)

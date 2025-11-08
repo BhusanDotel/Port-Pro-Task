@@ -4,3 +4,4 @@ python-dotenv==1.1.1
 pydantic==2.9.2
 httpx==0.28.1
 google-genai==1.49.0
+pydantic-ai-slim[google]

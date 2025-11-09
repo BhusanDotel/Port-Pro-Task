@@ -28,5 +28,4 @@ class ContainerAgent:
                         )
                 return response.text
         except Exception as e:
-            print("==============")
-            print(f"Error processing query: {e}")
+            return f"An error occurred: {str(e)}"

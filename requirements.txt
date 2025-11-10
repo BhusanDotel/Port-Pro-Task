@@ -7,3 +7,6 @@ google-genai==1.49.0
 pydantic-ai-slim[google]
 fastmcp==2.13.0.2
 cyclopts>=5.0.0a1
+temporalio==1.18.2
+requests==2.32.4
+beautifulsoup4==4.14.2

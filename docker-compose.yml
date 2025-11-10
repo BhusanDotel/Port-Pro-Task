@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  # Temporal server (required for workflow orchestration)
+  temporal:
+    image: temporalio/auto-setup:latest
+    container_name: temporal-server
+    ports:
+      - "7233:7233"
+    environment:
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+    depends_on:
+      - postgresql
+    networks:
+      - pnct-network
+
+  # PostgreSQL for Temporal
+  postgresql:
+    image: postgres:13
+    container_name: temporal-postgresql
+    environment:
+      - POSTGRES_USER=temporal
+      - POSTGRES_PASSWORD=temporal
+    ports:
+      - "5432:5432"
+    volumes:
+      - temporal-db:/var/lib/postgresql/data
+    networks:
+      - pnct-network
+
+  # Temporal Web UI (optional, for monitoring workflows)
+  temporal-ui:
+    image: temporalio/ui:latest
+    container_name: temporal-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - temporal
+    networks:
+      - pnct-network
+
+  # Main application (FastAPI + MCP Server + Temporal Worker)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pnct-app
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - WORK_FLOW_PORT=7233
+      - WORKFLOW_URL=http://temporal:7233
+    depends_on:
+      - temporal
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - pnct-network
+    restart: unless-stopped
+
+networks:
+  pnct-network:
+    driver: bridge
+
+volumes:
+  temporal-db:
+    driver: local
